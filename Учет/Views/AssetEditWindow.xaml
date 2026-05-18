@@ -1,0 +1,84 @@
+﻿<Window x:Class="Учет.Views.AssetEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource ModernWindow}"
+        Title="Добавление оборудования" Height="650" Width="600"
+        WindowStartupLocation="CenterOwner">
+
+    <Border Style="{StaticResource ContentCard}">
+        <Grid Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Background="#2196F3" Width="44" Height="44" CornerRadius="12" 
+                    Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="0,0,0,20">
+                <TextBlock Text="🖥️" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <TextBlock x:Name="TitleText" Text="Добавление оборудования" FontSize="22" FontWeight="Bold" 
+                       Grid.Row="0" Grid.ColumnSpan="2" Margin="60,0,0,0" VerticalAlignment="Center"/>
+
+            <Border Grid.Row="1" Grid.ColumnSpan="2" Background="#F0F0F0" Height="1" Margin="0,5,0,20"/>
+
+            <TextBlock Text="Краткое название *" Grid.Row="2" Grid.Column="0" 
+                       Style="{StaticResource FieldLabel}" VerticalAlignment="Center"/>
+            <TextBox x:Name="ShortNameBox" Grid.Row="2" Grid.Column="1" 
+                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"/>
+
+            <TextBlock Text="Полное название" Grid.Row="3" Grid.Column="0" 
+                       Style="{StaticResource FieldLabel}" VerticalAlignment="Center"/>
+            <TextBox x:Name="FullNameBox" Grid.Row="3" Grid.Column="1" 
+                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"/>
+
+            <TextBlock Text="Инвентарный номер *" Grid.Row="4" Grid.Column="0" 
+                       Style="{StaticResource FieldLabel}" VerticalAlignment="Center"/>
+            <TextBox x:Name="InventoryBox" Grid.Row="4" Grid.Column="1" 
+                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"/>
+
+            <TextBlock Text="Тип оборудования" Grid.Row="5" Grid.Column="0" 
+           Style="{StaticResource FieldLabel}" VerticalAlignment="Center"/>
+            <TextBox x:Name="TypeBox" Grid.Row="5" Grid.Column="1" 
+         Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"
+         Text="ПК" ToolTip="Введите тип оборудования"/>
+
+            <TextBlock Text="Отдел" Grid.Row="6" Grid.Column="0" 
+                       Style="{StaticResource FieldLabel}" VerticalAlignment="Center"/>
+            <ComboBox x:Name="DepartmentCombo" Grid.Row="6" Grid.Column="1" 
+                      Style="{StaticResource ModernComboBox}" Margin="0,0,0,15"/>
+
+            <TextBlock Text="Дата ввода" Grid.Row="7" Grid.Column="0" 
+                       Style="{StaticResource FieldLabel}" VerticalAlignment="Center"/>
+            <DatePicker x:Name="DatePicker" Grid.Row="7" Grid.Column="1" 
+                        Style="{StaticResource ModernDatePicker}" Margin="0,0,0,15"/>
+
+            <TextBlock Text="Статус" Grid.Row="8" Grid.Column="0" 
+                       Style="{StaticResource FieldLabel}" VerticalAlignment="Center"/>
+            <ComboBox x:Name="StatusCombo" Grid.Row="8" Grid.Column="1" 
+                      Style="{StaticResource ModernComboBox}" Margin="0,0,0,15"/>
+
+            <StackPanel Grid.Row="9" Grid.ColumnSpan="2" Orientation="Horizontal" 
+                        HorizontalAlignment="Right" Margin="0,20,0,0">
+                
+                <Button Content="Отмена" Style="{StaticResource SecondaryButton}" 
+                        Click="Cancel_Click" Margin="0,0,12,0" Width="120" Height="42"/>
+                
+                <Button Content="Сохранить" Style="{StaticResource PrimaryButton}" 
+                        Click="Save_Click" Width="140" Height="42"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

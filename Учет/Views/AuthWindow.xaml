@@ -1,0 +1,53 @@
+﻿<Window x:Class="Учет.Views.AuthWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:Учет.Converters"
+        Style="{StaticResource ModernWindow}"
+        Title="Авторизация" Height="460" Width="500"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+    </Window.Resources>
+
+    <Border Style="{StaticResource ContentCard}">
+        <Grid Margin="35">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Border Background="#2196F3" Width="55" Height="55" CornerRadius="14" 
+                    HorizontalAlignment="Center" Margin="0,0,0,20">
+                <TextBlock Text="🔐" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+
+            <TextBlock Text="Вход в систему" FontSize="24" FontWeight="Bold" 
+                       HorizontalAlignment="Center" Grid.Row="1" Margin="0,0,0,8"/>
+            <TextBlock Text="Введите свои учётные данные" FontSize="13" 
+                       Foreground="#757575" HorizontalAlignment="Center" Grid.Row="2" Margin="0,0,0,25"/>
+
+            <TextBlock Text="Логин" Style="{StaticResource FieldLabel}" Grid.Row="3" Margin="0,0,0,5"/>
+            <TextBox x:Name="LoginBox" Style="{StaticResource ModernTextBox}" Grid.Row="4" Margin="0,0,0,15"/>
+
+            <!-- Пароль -->
+            <TextBlock Text="Пароль" Style="{StaticResource FieldLabel}" Grid.Row="5" Margin="0,0,0,5"/>
+            <PasswordBox x:Name="PasswordBox" Style="{StaticResource ModernPasswordBox}" Grid.Row="6" Margin="0,0,0,25"/>
+
+            <Button Content="Войти" Style="{StaticResource PrimaryButton}" 
+                    Grid.Row="5" Click="Login_Click" Height="46" FontSize="15" Margin="0,75,0,-75"/>
+
+            <TextBlock x:Name="ErrorText" Grid.Row="8" 
+                       Text="Неверный логин или пароль" 
+                       Foreground="#DC3545" 
+                       FontSize="12" 
+                       HorizontalAlignment="Center" 
+                       Margin="0,15,0,0"
+                       Visibility="Collapsed"/>
+        </Grid>
+    </Border>
+</Window>

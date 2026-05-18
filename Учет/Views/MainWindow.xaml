@@ -1,0 +1,234 @@
+﻿<Window x:Class="Учет.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Учет.ViewModels"
+        xmlns:converters="clr-namespace:Учет.Converters"
+        xmlns:models="clr-namespace:Учет.Models"
+        Title="ИС Учет" Height="750" Width="1300"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F7FA">
+
+    <Window.Resources>
+        <!-- Конвертеры -->
+        <converters:DateToExpirationColorConverter x:Key="DateToColor"/>
+        <converters:StatusToStringConverter x:Key="StatusToString"/>
+        <converters:StatusToColorConverter x:Key="StatusToColor"/>
+
+        <!-- Стиль для DataGrid -->
+        <Style x:Key="ModernDataGrid" TargetType="DataGrid">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="RowHeight" Value="35"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="AlternatingRowBackground" Value="#F9F9F9"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+        </Style>
+
+        <!-- Стиль заголовков DataGrid -->
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#F5F5F5"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+        </Style>
+
+        <!-- Стиль строки таблицы с цветовой индикацией -->
+        <Style x:Key="RowStyle" TargetType="DataGridRow">
+            <Setter Property="Background" Value="{Binding PlannedWriteOffDate, Converter={StaticResource DateToColor}}"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#2196F3"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Шаблон для отделов -->
+        <HierarchicalDataTemplate x:Key="DepartmentTemplate" 
+                                  DataType="{x:Type models:Department}"
+                                  ItemsSource="{Binding Children}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="📁 " Margin="0,0,4,0" FontSize="14"/>
+                <TextBlock Text="{Binding Name}" FontSize="13"/>
+            </StackPanel>
+        </HierarchicalDataTemplate>
+    </Window.Resources>
+
+    <Grid Margin="15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320"/>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ========== ЛЕВАЯ ПАНЕЛЬ: ОТДЕЛЫ ========== -->
+        <Border Grid.Column="0" 
+                Background="White" 
+                CornerRadius="12" 
+                Effect="{StaticResource CardShadow}">
+            <Grid Margin="15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Заголовок с кнопкой добавления -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                    <Border Background="#2196F3" Width="36" Height="36" CornerRadius="10" Margin="0,0,12,0">
+                        <TextBlock Text="🏢" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Отделы" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Button Content="➕" Command="{Binding AddDepartmentCommand}"
+                            Width="30" Height="30" FontSize="16"
+                            Background="#4CAF50" Foreground="White" BorderThickness="0"
+                            Cursor="Hand" Margin="15,0,0,0" ToolTip="Добавить отдел">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" 
+                                                    CornerRadius="8" 
+                                                    Padding="0,0,0,0"
+                                                    Width="30" Height="30">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+
+                <!-- Дерево отделов -->
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <TreeView ItemsSource="{Binding Departments}" 
+                              SelectedItemChanged="TreeView_SelectedItemChanged"
+                              ItemTemplate="{StaticResource DepartmentTemplate}"
+                              BorderThickness="0" 
+                              Background="Transparent">
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="Padding" Value="5,3"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Setter Property="FontSize" Value="13"/>
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                    </TreeView>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <!-- ========== ПРАВАЯ ПАНЕЛЬ ========== -->
+        <DockPanel Grid.Column="2" LastChildFill="True">
+
+            <!-- Панель инструментов -->
+            <Border DockPanel.Dock="Top" 
+                    Background="White" 
+                    CornerRadius="12" 
+                    Margin="0,0,0,15"
+                    Effect="{StaticResource CardShadow}">
+                <WrapPanel Margin="10,8">
+                    <Button Content="➕ Добавить" Command="{Binding AddCmd}" 
+                            Style="{StaticResource PrimaryButton}" Height="36" Padding="15,0" Margin="3"/>
+                    <Button Content="✏️ Изменить" Command="{Binding EditCmd}" 
+                            Style="{StaticResource PrimaryButton}" Height="36" Padding="15,0" Margin="3"/>
+                    <Button Content="🗑️ Удалить" Command="{Binding DelCmd}" 
+                            Style="{StaticResource DangerButton}" Height="36" Padding="15,0" Margin="3"/>
+                    <Separator Width="1" Background="#E0E0E0" Margin="10,5"/>
+                    <Button Content="🔧 На ремонт" Command="{Binding RepairCmd}" 
+                            Style="{StaticResource PrimaryButton}" Height="36" Padding="15,0" Margin="3"/>
+                    <Button Content="✅ Вернуть" Command="{Binding ReturnCmd}" 
+                            Style="{StaticResource PrimaryButton}" Height="36" Padding="15,0" Margin="3"/>
+                    <Separator Width="1" Background="#E0E0E0" Margin="10,5"/>
+                    <Button Content="📄 Документ" Command="{Binding DocCmd}" 
+                            Style="{StaticResource PrimaryButton}" Height="36" Padding="15,0" Margin="3"/>
+                    <Button Content="📋 История" Command="{Binding HistCmd}" 
+                            Style="{StaticResource PrimaryButton}" Height="36" Padding="15,0" Margin="3"/>
+                    <Button Content="📥 Экспорт" Command="{Binding ExportCmd}" 
+                            Style="{StaticResource PrimaryButton}" Height="36" Padding="15,0" Margin="3"/>
+                </WrapPanel>
+            </Border>
+
+            <!-- Панель поиска и фильтрации -->
+            <Border DockPanel.Dock="Top" 
+                    Background="White" 
+                    CornerRadius="12" 
+                    Margin="0,0,0,15"
+                    Effect="{StaticResource CardShadow}">
+                <Grid Margin="15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="🔍" FontSize="16" VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1" Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource ModernTextBox}" Height="38" Padding="10,0"/>
+
+                    <TextBlock Grid.Column="3" Text="📊 Статус:" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                    <ComboBox Grid.Column="4" ItemsSource="{Binding StatusList}" 
+                              SelectedItem="{Binding FilterStatus}"
+                              Style="{StaticResource ModernComboBox}" Height="38"/>
+
+                    <Border Grid.Column="6" Background="#E8F4FD" CornerRadius="8" Padding="12,6">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📊 Найдено:" VerticalAlignment="Center" Foreground="#555"/>
+                            <TextBlock Text="{Binding AssetsView.Count}" FontWeight="Bold" 
+                                       FontSize="16" Foreground="#2196F3" Margin="8,0,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Таблица оборудования -->
+            <Border Background="White" CornerRadius="12" Effect="{StaticResource CardShadow}">
+                <DataGrid ItemsSource="{Binding AssetsView}" 
+                          AutoGenerateColumns="False" 
+                          SelectedItem="{Binding SelectedAsset}" 
+                          RowStyle="{StaticResource RowStyle}"
+                          Style="{StaticResource ModernDataGrid}"
+                          Margin="1">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Инв. номер" Binding="{Binding InventoryNumber}" Width="110"/>
+                        <DataGridTextColumn Header="Краткое название" Binding="{Binding ShortName}" Width="150"/>
+                        <DataGridTextColumn Header="Модель" Binding="{Binding FullName}" Width="*"/>
+
+                        <DataGridTextColumn Header="Статус" Width="120">
+                            <DataGridTextColumn.Binding>
+                                <Binding Path="Status" Converter="{StaticResource StatusToString}"/>
+                            </DataGridTextColumn.Binding>
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="{Binding Status, Converter={StaticResource StatusToColor}}"/>
+                                    <Setter Property="Padding" Value="6,4"/>
+                                    <Setter Property="Margin" Value="-6,-4"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <DataGridTextColumn Header="Дата ввода" Binding="{Binding CommissioningDate, StringFormat=dd.MM.yyyy}" Width="100"/>
+                        <DataGridTextColumn Header="План. списание" Binding="{Binding PlannedWriteOffDate, StringFormat=dd.MM.yyyy}" Width="100"/>
+                        <DataGridTextColumn Header="Ремонтов" Binding="{Binding RepairCount}" Width="80"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </DockPanel>
+    </Grid>
+</Window>

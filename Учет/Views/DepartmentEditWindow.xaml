@@ -1,0 +1,224 @@
+﻿<Window x:Class="Учет.Views.DepartmentEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Добавление отдела" Height="420" Width="520"
+        WindowStartupLocation="CenterOwner" 
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Background="#FAFAFA"
+        WindowStyle="None"
+        AllowsTransparency="True">
+
+    <Window.Resources>
+        <!-- Тени -->
+        <DropShadowEffect x:Key="CardShadow" BlurRadius="12" ShadowDepth="3" Opacity="0.15" Color="#000000"/>
+        <DropShadowEffect x:Key="ButtonShadow" BlurRadius="6" ShadowDepth="2" Opacity="0.2" Color="#000000"/>
+
+        <!-- Кнопка первичного действия -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="24,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Effect" Value="{StaticResource ButtonShadow}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8" 
+                                Padding="{TemplateBinding Padding}"
+                                Effect="{TemplateBinding Effect}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1976D2"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#1565C0"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Кнопка отмены -->
+        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="Foreground" Value="#424242"/>
+            <Setter Property="Effect" Value="{x:Null}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#D5D5D5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Поле ввода -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                          Margin="12,0" 
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#2196F3"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Выпадающий список (исправленный) -->
+        <Style x:Key="ModernComboBox" TargetType="ComboBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border x:Name="Border" 
+                                    Background="{TemplateBinding Background}" 
+                                    BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ContentPresenter x:Name="ContentSite" 
+                                                      Content="{TemplateBinding SelectionBoxItem}" 
+                                                      VerticalAlignment="Center" 
+                                                      Margin="12,0,0,0"/>
+                                    <ToggleButton x:Name="ToggleButton" 
+                                                  Grid.Column="1"
+                                                  Focusable="False"
+                                                  IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Background="Transparent"
+                                                  BorderThickness="0"
+                                                  Width="40"
+                                                  Cursor="Hand">
+                                        <ToggleButton.Content>
+                                            <TextBlock Text="▼" FontSize="10" Foreground="#757575"/>
+                                        </ToggleButton.Content>
+                                    </ToggleButton>
+                                </Grid>
+                            </Border>
+                            <Popup x:Name="Popup" 
+                                   Placement="Bottom"
+                                   IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Slide">
+                                <Border x:Name="DropDownBorder" 
+                                        Background="White" 
+                                        BorderBrush="#E0E0E0" 
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Margin="0,2,0,0"
+                                        Effect="{StaticResource ButtonShadow}">
+                                    <ScrollViewer MaxHeight="200">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#2196F3"/>
+                                <Setter TargetName="Border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                            <Trigger Property="IsDropDownOpen" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#2196F3"/>
+                                <Setter TargetName="Border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Заголовок поля -->
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#424242"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="White" Margin="10" CornerRadius="16" Effect="{StaticResource CardShadow}">
+        <Grid Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Заголовок -->
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,20">
+                <Border Background="#2196F3" Width="44" Height="44" CornerRadius="12" Margin="0,0,15,0">
+                    <TextBlock Text="🏢" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock x:Name="TitleText" Text="Добавление отдела" FontSize="22" FontWeight="Bold" Foreground="#212121"/>
+                    <TextBlock Text="Заполните информацию о новом отделе" FontSize="12" Foreground="#757575" Margin="0,2,0,0"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Разделитель -->
+            <Border Grid.Row="1" Background="#F0F0F0" Height="1" Margin="0,0,0,20"/>
+
+            <!-- Поле названия -->
+            <TextBlock Grid.Row="2" Style="{StaticResource FieldLabel}" Text="Название отдела *"/>
+            <TextBox x:Name="NameBox" Grid.Row="3" Style="{StaticResource ModernTextBox}" 
+                     TextChanged="NameBox_TextChanged" Margin="0,0,0,20"/>
+
+            <!-- Родительский отдел -->
+            <TextBlock Grid.Row="4" Style="{StaticResource FieldLabel}" Text="Родительский отдел"/>
+            <ComboBox x:Name="ParentCombo" Grid.Row="5" Style="{StaticResource ModernComboBox}"
+                      DisplayMemberPath="Name" SelectedValuePath="Id" Margin="0,0,0,8"/>
+
+            <TextBlock Grid.Row="6" Text="Оставьте пустым для создания отдела верхнего уровня" 
+                       FontSize="11" Foreground="#9E9E9E" Margin="0,0,0,47"/>
+
+            <!-- Кнопки -->
+            <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,40,0,0">
+                <Button Content="Отмена" Style="{StaticResource SecondaryButton}" 
+                        Click="Cancel_Click" Margin="0,0,12,0"
+                        IsCancel="True" Width="120" Height="42"/>
+                <Button Content="Сохранить" Style="{StaticResource PrimaryButton}" 
+                        Click="Save_Click" Width="140" Height="42"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
